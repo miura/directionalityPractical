@@ -1,0 +1,324 @@
+<h1 id="protocol-1.-tracking-by-the-particletracker-plugin-of-imagejfiji"><a href="#TOC"><span class="header-section-number">1</span> Protocol 1. Tracking by the ParticleTracker Plugin of ImageJ/Fiji</a></h1>
+<p>We use open source software Fiji for particle tracking. Fiji is a distribution of ImageJ, bundled with many useful plugins.</p>
+<dl>
+<dt>Get Image Files</dt>
+<dd><p><br />Download and save the image files in your local computer. A file named <strong>eb18_b.tif</strong> is a sequence taken from single cultured cell labeled with eb1. We use this as the first sample to measure the directionality. Other two image sequences, <strong>early.tif</strong> and <strong>late.tif</strong> are time-lapse of <em>Drosophila</em> embryo from late cellularizatino to gastrulation phase. During this period cells become polarized. Each file was extracted from a longer single sequence. We study if there is bias in microtubule orientation, measured by movement direction of EB1 protein by tracking. We then try to compare the changes in the degree of bias in the movement direction using descriptive circular statistics.</p>
+</dd>
+<dt>Open the file in Fiji by</dt>
+<dd><p><br /><code>[File &gt; Open...]</code><br /></p>
+</dd>
+<dt>Examine the sequence using stack tools.</dt>
+<dd><p><br />Explore stack functions. <br />Start animation, Stop animation, change frame rates, Manipulations…</p>
+</dd>
+<dt>Download ParticleTracker Plugin and Install</dt>
+<dd><p><br />The plugin could be down loaded from</p>
+<ol>
+<li><p><a href="http://www.mosaic.ethz.ch/Downloads/ParticleTracker"><code class="url">http://www.mosaic.ethz.ch/Downloads/ParticleTracker</code></a></p></li>
+</ol>
+<p>To install the downloaded plugin, <code>[Plugins &gt; Install...]</code>. You could also directly copy the file to plugins folder under Fiji directory and do <code>[Help &gt; Refresh Menus]</code></p>
+</dd>
+<dt>Set correct dimensions of the image by</dt>
+<dd><p><br /><code>[Image &gt; Properties...]</code><br />… Image stacks are by default taken as a z-series and not t-series. Set Slices to 1, and Frames to appropriate size (number of frames).</p>
+</dd>
+<dt>Start the ParticleTracker plugin</dt>
+<dd><p><br />Start the particleTracker by <code>[Plugins &gt; Mosaic &gt; ParticleTracker 2D/3D]</code>.</p>
+</dd>
+<dt>Study Dot Detection Parameter</dt>
+<dd><p><br />This tracking tool has two parts. First, all dots in each frame are detected, and then dots in successive frames are linked. The first task then is to determine three parameters for dot detection. There are three parameters.</p>
+<ol>
+<li><p><strong>Radius</strong><br />Expected diameter of dot to be detected in pixels.</p></li>
+<li><p><strong>CutOff</strong><br />Cutoff level for the none-particle discrimination criteria, a value for each dot that is based on intensity moment order 0 and 2.</p></li>
+<li><p><strong>Percentile</strong><br />Larger the value, more particles with dark intensity will be detected. Corresponds to the area proportion below intensity histogram in the upper part of the histogram.</p></li>
+</ol>
+<p>Try setting different numbers for these parameters and click &quot;Preview Detected&quot;. Red circles appear in the image stack. You could change the frames using the slider below the button.</p>
+<p>After some trials, set parameters to what you think is optimum.</p>
+</dd>
+<dt>Set Linking parameters</dt>
+<dd><p><br />Two parameters for linking detected dots should be set.</p>
+<ol>
+<li><p><strong>Link Range</strong><br />… could be more than 1, if you want to link dots that disappears and reappears. If not, set the value to 1.</p></li>
+<li><p><strong>Displacement</strong><br />… expected maximum distance that dots could move from one frame to the next. Unit is in pixels.</p></li>
+</ol>
+<p>After parameters are set, click &quot;OK&quot;. Tracking starts.</p>
+</dd>
+<dt>Inspect the Tracking Results</dt>
+<dd><p><br />When tracking is done, a new window titled &quot;Results&quot; appears. At the bottom of the window, there are many buttons. Click &quot;Visualize all trajectories&quot;, and then a duplicate of the image stack overlaid with trajectories will appear.</p>
+<p>Select a region within the stack using rectangular ROI tool and then click &quot;Focus on Area&quot;. This will create another image stack, with only that region. Since this image is zoomed, you could carefully check if the tracking was successful or not.</p>
+<p>If you think the tracking was not successful, then you should reset all the parameters and do the tracking again.</p>
+</dd>
+<dt>Export the tracking results</dt>
+<dd><p><br />To analyze the results in R, data should be saved as a file. To do so, first click &quot;All Trajectories to Table&quot;. Results table will then created. In this results table window, select <code>[File &gt; Save As...]</code> and save the file on your desktop. By default, file type extension is &quot;.xls&quot;, excel format, but change this to &quot;.csv&quot;. CSV stands for &quot;comma separated file&quot;, and this is more classic but general data format which you could easily import in many software including R.</p>
+</dd>
+</dl>
+<h1 id="protocol-2.-directionality-analysis-using-r"><a href="#TOC"><span class="header-section-number">2</span> Protocol 2. Directionality Analysis Using R</a></h1>
+<p>R is an open source statistical analysis tool widely used in scientific community. Many packages are available as additional module. There are several interfaces available for R, and we use Rstudio in this practical course.</p>
+<dl>
+<dt>Exercise: A Very Short Introduction to R</dt>
+<dd><p><br />To set a variable &quot;a&quot; to 3,</p>
+<p><code>a &lt;- 3</code></p>
+<p>Similarly, &quot;b&quot; to 5,</p>
+<p><code>b &lt;- 5</code></p>
+<p>To see the content of variable, simply type</p>
+<p><code>a</code></p>
+<p>Then you will see a print out in the console</p>
+<p><code>[1] 3</code></p>
+<p>To calculate,</p>
+<p><code>a + b</code></p>
+<p>then the print out will be</p>
+<p><code>[1] 8</code></p>
+<p>to store the result of calculation in &quot;c&quot;</p>
+<p><code>c &lt;- a - b</code></p>
+<p>Check the results</p>
+<p><code>c</code></p>
+<p>prints out</p>
+<p><code>[1] -2</code></p>
+<p>Down till here, we made only one value associated with a variable, but a variable could contain multiple numbers (we call it a &quot;vector&quot;). First try the following</p>
+<p><code>1:5</code></p>
+<p>this will print out</p>
+<p><code>[1] 1 2 3 4 5</code></p>
+<p>similarly,</p>
+<p><code>2:10</code></p>
+<p>then the output</p>
+<p><code>[1] 2  3  4  5  6  7  8  9 10</code></p>
+<p>such numerical sequence could be stored in a variable</p>
+<p><code>d &lt;- 1:10</code></p>
+<p>check the content of &quot;d&quot;, a vector.</p>
+<p><code>d</code></p>
+<p>output will be</p>
+<p><code>[1]  1  2  3  4  5  6  7  8  9 10</code></p>
+<p>We now that the length of the vector &quot;d&quot; is 10, but for the work you do in the following, you better know the command to know the length of vector.</p>
+<p><code>length(d)</code></p>
+<p>&quot;length()&quot; is a command that inspects the vector and returns its length, so the output will be</p>
+<p><code>[1] 10</code>.</p>
+<p>Similarly,</p>
+<p><code>length(a)</code></p>
+<p>prints out</p>
+<p><code>[1] 1</code></p>
+<p>We could generate a vector in a bit more complex way by using command &quot;seq(start number, end number, increment)&quot;.</p>
+<p><code>da &lt;- seq(1, 10, 0.7)</code></p>
+<p><code>da</code></p>
+<p>will print out</p>
+<pre><code>[1] 1.0 1.7 2.4 3.1 3.8 4.5 5.2 5.9 6.6 7.3 8.0 8.7
+[13] 9.4
+</code></pre>
+</dd>
+<dt>Installing Packages</dt>
+<dd><p><br />The base package of R already has many useful functions, but when you have complex and specific task, you could either write your own script for that task, or you could also search for a package that does the job. In many cases, searching an appropriate package is more efficient than writing your own. We use following packages:</p>
+<ol>
+<li><p>fisheyeR</p></li>
+<li><p>CircStats</p></li>
+<li><p>circular</p></li>
+<li><p>plotrix</p></li>
+</ol>
+<p>In Rstudio, you could see available packages in the &quot;Packages&quot; tab in the right bottom panel. All the packages listed there could be simply loaded from your local R distribution. Many of packages which are not listed there should be downloaded from the internet and installed. Download and installing actually is not difficult, since there is a menu command for that purpose.</p>
+<p><code>[Tools &gt; Install Packages]</code><br />Type in the package name that you want to install in the second field, and simply click &quot;Install&quot; will do all the job for you.</p>
+<p>After installation if finished, check the &quot;packages&quot; tab again and click the check box for the installed package. If the box is checked, you could use functions offered by the package.</p>
+<p>In the following, command line interface in the left-bottom panel will be used. Command input field starts with a prompt ‘<span class="math"> &gt; </span>’, but will be omitted in this textbook.</p>
+</dd>
+<dt>Loading tracking data</dt>
+<dd><p><br />Load data by the following command.</p>
+<pre><code>ptdata &lt;- read.csv(&quot;Z:/11EMBOcourse/trials/PTresults.csv&quot;)
+</code></pre>
+<p>The argument within the parenthesis is just an example path, and it should be adjusted according to where you have saved the file.</p>
+<p>If you happen to have exported the data without changing the file extension, then the file ending should be &quot;.xls&quot; and in that case, you have your data not in comma separated, but in tab-delimited file. To import such data, you need an option added.</p>
+<pre><code>ptdata &lt;- read.csv(&quot;Z:/11EMBOcourse/trials/PTresults.xls&quot;, sep=&quot;\t&quot;)
+</code></pre>
+<p>The second argument explicitly states that the values are separated by tab (<code>\tab</code>).</p>
+<p>If the import is successful, you will find data <code>ptdata</code> being listed in the &quot;Workspace&quot; tab in the right top column. Single clicking that data name in the list will open a table in the left-top panel showing the content of that data variable.</p>
+<p>More traditional way of checking data content is from command line.</p>
+<pre><code>head(ptdata)
+</code></pre>
+<p>function <code>head()</code> command will print the first row in the data.</p>
+<p><strong>IMPORTANT NOTE ON THE DATA STRUCTURE</strong><br />In the output of the ParticleTracker plugin, x and y coordinates are inverted (values in &quot;x&quot; column is actually y values and the values in &quot;y&quot; column are x values). According to the author of the plugin, they cannot change this for maintaining the consistency with the matlab script they have. We will see bias in the radial plot but keep in mind that is 90 degrees rotated.</p>
+</dd>
+<dt>Exercise: Accessing data in 2D table</dt>
+<dd><p><br />If data is in a table format (2D vector, such as the case with our data &quot;ptdata&quot;), then an element in the table could be specified by a form &quot;data[row index, column index]&quot;. Both row and column number start from 1 so if you want to get a number at the top-left corner of the table we have just imported, way of specifying that cell is</p>
+<p><code>ptdata[1, 1]</code></p>
+<p>and one column to the right would be</p>
+<p><code>ptdata[1, 2]</code></p>
+<p>To specify a column, not only a single cell</p>
+<pre><code>data[, columnnumber]
+</code></pre>
+<p>Where a row number should be specified is now blank. It means that all number applies there, which in turn means all the rows available. Another way to specify a column by name of the column header is also available. If we want to specify a column &quot;Trajectory&quot; in the table,</p>
+<pre><code>ptdata$Trajectory
+</code></pre>
+<p>This means &quot;Column Trajectory in data ptdata&quot;. By &quot;dataname + dollar sign ($) + the column header&quot;, you could specify a column vector within in the table.</p>
+</dd>
+<dt>Exercise: Extracting Vectors out of DataFrame</dt>
+<dd><p><br />Our aim is to extract x and y coordinates, and calculate the angle of the movement from one time point to the other. For this, we first extract x and y vectors out of the data. Don’t be afraid with the name &quot;vector&quot;. It simply is a term that means &quot;train of numbers&quot;. We first try to extract x and y coordinates of a specific trajectory. In the case below, Trajectory No. 2 will be extracted.</p>
+<pre><code>t1x &lt;- ptdata[ptdata$Trajectory==2, 4]
+t1y &lt;- ptdata[ptdata$Trajectory==2, 5]
+</code></pre>
+<p>Two lines of commands are executed individually as you press &quot;return&quot; key. Both lines are doing similar job each for x and y. Translation of these lines into normal word would be something like this:</p>
+<p><code>From vector ptdata, copy column index 4 to t1x</code><br /><code>for only those rows which have values equal to 2</code><br /><code>in column Trajectory.</code></p>
+<p>We specified a range of rows by <code>ptdata\$trajectory==2</code>. To see what this is doing, try</p>
+<pre><code>ptdata$Trajectory==2
+</code></pre>
+<p>You will then see a sequence of statements with &quot;True&quot; and &quot;False&quot; This tests for all the values in the Trajectory column, and returns &quot;Yes (True)&quot; if the value is 2. This could also be written by column index rather than column header as the following</p>
+<pre><code>ptdata[, 2]==2
+</code></pre>
+<p>The returned values will be the same.</p>
+<p>You could check if vectors were extracted successfully by clicking corresponding variable name (<code>t1x</code> or <code>t1y</code>) in the &quot;Workspace&quot; tab. Alternatively (which actually is the traditional way in R) you could type</p>
+<pre><code>t1x
+</code></pre>
+<p>in the command line. Content of the vector will be printed out. If the length of data is too long, then you could always use head() function to truncate the print out.</p>
+<pre><code>head(t1x)
+</code></pre>
+</dd>
+<dt>Exercise: Getting movement vectors for each time points</dt>
+<dd><p><br />We now try to get movement vectors. We need to calculate vectors that are made between the position of dot at frame <em>t</em> and the position in the next frame <em>t+1</em>. To do so, we extract two vectors, each with one element less than the original coordinate vector and one element shifted in one of the two vectors. This could be done as follows.</p>
+<pre><code>d1x &lt;- t1x[2:length(t1x)] - t1x[1:length(t1x)-1]
+d1y &lt;- t1y[2:length(t1y)] - t1y[1:length(t1y)-1]
+</code></pre>
+<p>Colon in the square brackets are for generating numerical sequence as we did in the short introduction.</p>
+<p>In the right side assignment, we use t1x vector two times, but calling different ranges. In the first term, the range starts from second element of t1x vector and extends until the end. The second term calls from the beginning of the vector and extends until the second last element.</p>
+<p>… the same thing could be done in much simpler way by using <code>diff()</code> function.</p>
+<pre><code>d1x &lt;- diff(t1x)
+d1y &lt;- diff(t1y)
+</code></pre>
+<p>Check that d1x actually is the difference generated from t1x.</p>
+</dd>
+<dt>Exercise: Getting the direction of movement vectors</dt>
+<dd><p><br />We now want to get the direction of each movement vector. This could be done by using the function offered by the package fisheyeR, which you loaded in the beginning of this protocol. This function converts Cartesian coordinate to polar coordinate.</p>
+<pre><code>tpol1 &lt;- toPolar(d1x, d1y)
+</code></pre>
+<p>The returned value tpol1 should have twice the length of d1x or d1y. This is because in the first half, theta values are listed and in the last half, magnitude is listed. Our interest is in the theta values, the angle or direction of the movement vector. Check the values by</p>
+<pre><code>tpol1
+</code></pre>
+</dd>
+<dt>Calculate directions of all movement vector</dt>
+<dd><p><br />Down to here we tired calculating direction of movement vectors only in a single trajectory. What we want actually is to calculate all the directions of movement occurring in the image sequence to examine if there is any bias in the movement direction. To do so, we could use function <code>diff()</code> but there is one problem. Since all data are in a single table and trajectories are in same columns, <code>diff()</code> will calculate the movement vector that is made between the last coordinates of trajectory <em>n</em> and the coordinates in the first time point of trajectory <em>n+1</em>. To avoid this, we prepare <code>diff()</code> of trajectory id, and use that vector as a flag for elimination of diff data from the <code>diff()</code> of x and y coordinates. We first take an example with a short vectors.</p>
+<p>Prepare a sample sequence of x coordinates and get diff.</p>
+<pre><code>aa &lt;-c(1:10, 101:110)
+daa &lt;-diff(aa)
+</code></pre>
+<p>The function <code>c()</code> constructs a vector by combining arguments so typing aa should output</p>
+<pre><code>[1]   1   2   3   4   5   6   7   8   9  10 101 102 103 104 105 106 107 108 109
+[20] 110
+</code></pre>
+<p>Then prepare a sample sequence of trajectory id.</p>
+<pre><code>bb &lt;- c(rep(c(1), 10), rep(c(2), 10))
+dbb &lt;- diff(bb)
+</code></pre>
+<p>Function <code>rep()</code> will repeat the numerical sequence in the first argument up to the number given in the second argument. So typing bb should return</p>
+<pre><code>[1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2
+</code></pre>
+<p>diff of this vector then should be</p>
+<pre><code>[1] 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+</code></pre>
+<p>As such, we obtain a sequence dbb that flags where data should be removed from diff of aa, daa. We then pass a condition for the daa in the following way.</p>
+<pre><code>daac &lt;- daa[dbb == 0]
+</code></pre>
+<p>We apply such data processing to our real data.</p>
+<pre><code>dtx &lt;- diff(ptdata$x)
+dty &lt;- diff(ptdata$y)
+dtraj &lt;- diff(ptdata$Trajectory)
+dtxc &lt;- dtx[dtraj == 0]
+dtyc &lt;- dty[dtraj == 0]
+pol = toPolar(dtxc, dtyc)
+</code></pre>
+<p><code>ptdata\$x</code> will return the column with the header &quot;x&quot; from the table in <code>ptdata</code>. In the same way, we could isolate y coordinates as a vector in the second line. Other lines are same procedure as we tested with the examples. We now have a vector <em>pol</em>, which stores polar coordinates of movement vectors.</p>
+<p>Since pol is double the length of x or y coordinate columns, we need to isolate only angles.</p>
+<pre><code>angledata &lt;- pol[1:(length(pol)/2)]
+outdata &lt;- data.frame(angledata)
+</code></pre>
+<p>We now have data in <em>angledata</em>. We also could get magnitude of movement vectors, which is the displacement per frame (velocity) by extracting the latter half of <em>pol</em>. The second line stores in data frame that will be useful only to look at the data and is optional.</p>
+<p>To analyze data, one best way to visualize the bias is plotting a histogram.</p>
+<pre><code>#plotting general histogram
+bins &lt;- seq(-pi, pi, pi/50)
+hh &lt;- hist(angledata, breaks=bins)
+</code></pre>
+<p>We first prepare a vector that defines breaks for the histogram bins. This is done by the function <code>seq(start, end, increment)</code>.</p>
+<p>Then use the function <code>hist(data, breaks=bins)</code> is used to get the histogram values. You will then see a plot in the plot tab in the right-bottom panel. To have more information in the plot, or to adjust plotting parameters, see help by</p>
+<pre><code>help(hist)
+</code></pre>
+<p>To further improve the plot, we could see the distribution by using radial plotting function. We first need to load a package required for radial plotting.</p>
+<pre><code>#plotting radial plots
+library(plotrix)
+</code></pre>
+<p>There are many functions in various packages that allow polar plots (or &quot;radial plot&quot; or &quot;circular plot&quot;). For small number of sampling any of them works well but radial plot function in <code>plotrix</code> seems to be better for data with a large sampling number.</p>
+<p>We first extract histogram counts from <code>hh</code></p>
+<pre><code># prepare index
+hhcounts &lt;- hh$counts
+</code></pre>
+<p>Then prepare index for plotting in the radial plot. Unlike histogram, where breaks define the starting point of a bin and the bin extends until the next break, we have single point for representing data. For this, we need to adjust the position by half the width of bin.</p>
+<pre><code>radpos &lt;- hh$mids
+labpos = seq(-pi, 3/4*pi, by=pi/4)
+radlabels &lt;- as.character(format(labpos, digits=2))
+</code></pre>
+<p><code>hh$mids</code> is a vector with values at the midpoints of bin breaks. Note that if we calculate the same values from break positions, it would be something like (you don’t need to do this)</p>
+<pre><code>radpos &lt;- hh$breaks[1:length(hh$breaks)-1] + diff(hh$breaks)/2
+</code></pre>
+<p>. See help of &quot;hist&quot; for more information on &quot;mids&quot;. function <code>as.charactor()</code> converts numbers that is formatted by <code>format()</code> for limiting digits to character. Using these vectors prepared for plotting, we finally do the radial.plot command.</p>
+<pre><code>radial.plot(hh$counts,radpos,
+            rp.type=&quot;p&quot;,
+            main=&quot;EB1 directionality&quot;,
+            line.col=&quot;blue&quot;, 
+            labels=radlabels, 
+            label.pos=labpos, 
+            radial.lim=c(0, 60),
+            mar=c(2, 2, 6, 2))
+</code></pre>
+<p>Note that for a command with many options, one could separate them in multiple lines as long as the outer parenthesis is not closed. Maximum value must be adjusted so that the plots fit inside.</p>
+</dd>
+<dt>Circular Statistics</dt>
+<dd><p><br />Circular statistics value could be easily calculated by using the package &quot;CircStats&quot; to know mean direction, circular dispersion. For mean direction<br /><code>circ.mean(angledata)</code></p>
+<p>will prints out the mean. Note that we are dealing with circular data, and the mean direction might not mean anything if the data is distributed uniformly. To know how data is dispersed, use the following command:</p>
+<p><code>circ.disp(angledata)</code></p>
+<p>This will print several outputs:</p>
+<pre><code>     n       r      rbar      var
+1 3340 459.527 0.1375829 0.862417
+</code></pre>
+<p>The value <code>var</code> is the circular dispersion of the data, that ranges between 0 and 1. If closer to 0, then it means that data are concentrated in the mean direction, and if closer to 1, data are dispersed to a large degree. One could compare the angular dispersion value of &quot;early&quot; and &quot;late&quot; data to see if there is any convergence in the movement direction in the late phase. To test the uniformity (randomness) of direction, Kuiper’s test could be used:</p>
+<p><code>kuiper(angledata, alpha=0.05)</code></p>
+<p>We used a significance level of 0.05, and out put could be</p>
+<pre><code>       Kuiper's Test of Uniformity 
+ 
+Test Statistic: 6.9836 
+Level 0.05 Critical Value: 1.747 
+Reject Null Hypothesis 
+</code></pre>
+<p>and this example case tells you that the direction is none-uniform.</p>
+<p>Another test available in the package is Rao’s spacing test for the uniformity of data, and is as follows:</p>
+<p><code>rao.spacing(angledata)</code></p>
+<p>then the output could be</p>
+<pre><code>       Rao's Spacing Test of Uniformity 
+ 
+Test Statistic = 137.0229 
+0.01 &lt; P-value &lt; 0.05  
+</code></pre>
+<p>So if you take a significance level of 0.05, null hypothesis (data is uniformly distributed around circle) is rejected.</p>
+<p>If you see that the movement is mostly unidirectional, then we could treat the movement using the von Mises circular statistics. Mean value <span class="math">μ</span> and concentration parameter, or degree of bias in the mean direction, <span class="math">κ</span> could be calculated as follows, and place the values in the plot using text command.</p>
+<pre><code>text(-100, 80, paste(&quot;myu: &quot;,as.character(vm.ml(angledata)$mu)))
+text(-100, 70, paste(&quot;kappa: &quot;,as.character(vm.ml(angledata)$kappa)))
+</code></pre>
+<p>function <code>paste(,)</code> concatenates characters.</p>
+<p><strong>TIP</strong> If the movement is bidirectional (for example, if the movement is biased in both 0 and 3.14 radian) then the concentration parameter <span class="math">κ</span> will not work well since it assumes that the bias is unidirectional. In such a case, one way is to multiply the angle data by two. This operation will bring the bidirectional movement to unidirectional and analysis of kappa value becomes valid.</p>
+</dd>
+<dt>Putting all into a script</dt>
+<dd><p><br />If you are successful in plotting, then you could write a script that does all these in one shot. Useful tool for doing this is the &quot;History&quot; tab in the top-right panel.</p>
+<p>First, create a new script file using the menu command.</p>
+<p><code>[File &gt; New &gt; R Script]</code></p>
+<p>You will then see a blank script in a tab in the top-left panel. You could write all the commands by you hand, but more efficient if you use your &quot;History&quot;. Click &quot;History&quot; tab in the top-right panel. This tab shows you all the command history. At the top of the &quot;History&quot;, there are several tools available. One of them is <strong>To Source</strong>, and this could be used to transfer lines you select to the script in the left side.</p>
+<p>Scroll back to the position where you did the data importing using read.csv.</p>
+<pre><code>ptdata &lt;- read.csv(&quot;Z:/11EMBOcourse/trials/PTresults.csv&quot;)
+</code></pre>
+<p>Select the line, and then click &quot;To Source&quot;. Check the script. You will see that the line is now in the script.</p>
+<p>To test using the script, let’s remove the data using commandline</p>
+<p><code>remove(ptdata)</code></p>
+<p>This command removes the ptdata from the workspace. Check the workspace and confirm that the data <code>ptdata</code> is not there anymore. Now, go back to the script, and select the line that was transferred from the history. Then click &quot;Run&quot; button in the top bar of the script tab. This will execute the selected command in the script file.</p>
+<p>Check that the data <code>ptdata</code> is now in the workspace again. We tested &quot;To Source&quot; and &quot;Run&quot; buttons with a single line, but we could also &quot;To Source&quot; and &quot;Run&quot; multiple lines selected.</p>
+<p>Go back to the history, cherry pick the commands that are necessary and transfer them into the source file. Be careful about the order of commands.</p>
+<p>After reconstructing the sequence of commands, you could save the script as a file. File name is automatically appended with extension &quot;.R&quot;. After the file is saved, you could execute all lines in the script by &quot;Source&quot; button in the &quot;script&quot; tab.</p>
+</dd>
+</dl>
+<h1 id="protocol-3.-particle-image-velocitometry-plugin-to-calculate-vector-field"><a href="#TOC"><span class="header-section-number">3</span> Protocol 3. Particle Image Velocitometry plugin to Calculate Vector Field</a></h1>
+<p>As you are now experienced with R, I only give rough draft of the analysis procedure with data coming from other processing. Particle Image Velocitometry is another way of measuring movement besides particle tracking. The PIV plugin could be downloaded from <a href="https://sites.google.com/site/qingzongtseng/piv"><code class="url">https://sites.google.com/site/qingzongtseng/piv</code></a>. Note that there is already another plugin in Fiji with the same name &quot;PIV&quot;. The one we download is more suited for our analysis. Output of the data already contains direction of vectors. We could then import the file in R, extract direction data and plot it in a similar way as it was shown in the Protocol 2. <br />Column headers in the data file is as follows.<br /></p>
+<blockquote>
+<p>x &amp; y &amp; ux1 &amp; uy1 &amp; mag1 &amp; ang1 &amp; p1 &amp; ux2 &amp; uy2 &amp; mag2 &amp; ang2 &amp; p2 &amp; ux0 &amp; uy0 &amp; mag0 &amp; flag <br /></p>
+</blockquote>
+<p><br />… so all we need is to get data from column index 6.</p>
+<h1 id="protocol-4.-direction-from-a-reference-point"><a href="#TOC"><span class="header-section-number">4</span> Protocol 4. Direction from a reference point</a></h1>
+<p>For those who have done everything down to here and have nothing to do: In case of the sequence &quot;eb1_8b.tif&quot;, eb1 movement is clearly directed outward from the cell center. To quantify this in a better manner than taking the direction as the angle against image, each movement vector against cell centroid could be calculated, so that the relative movement within cell could be analyzed. <br />If a movement vector we calculated in the protocol 1 and 3 is <span class="math">$\vec{v_{m}}$</span> and the position of cell centroid is <span class="math">$\vec{v_c}$</span>, then the angle made between these two vectors could simply be calculated by using dot product and arccos: <br /><span class="math">$cos(\theta) = \frac{\vec{v_c} \cdot \vec{v_m}}{|\vec{v_c}||\vec{v_m}|}\\
+$</span><br /> <br /><span class="math">$\theta = acos(\frac{\vec{v_c} \cdot \vec{v_m}}{|\vec{v_c}||\vec{v_m}|})\\
+$</span><br /></p>

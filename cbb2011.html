@@ -1,0 +1,83 @@
+<blockquote>
+<p>Using several image processing and analysis tools, we explore strategies for quantifying the microtubule polarity of EB1 labeled cells within Drosophila embryo. Students learn how to measure directionality of movement in image sequences and how to treat circular statistics.</p>
+</blockquote>
+<h1 id="introduction">Introduction</h1>
+<p>Regulation of cytoskeletal orientation is a basic mechanism for controlling cell polarity, and hence the dynamics of coordinated multicellular movement. In this practical, we try to establish analysis protocol for studying microtubule orientation within Drosophila embryo and to examine the role of MT orientation in cell dynamics during embryogenesis. For this, we use microtubule binding protein EB1. This protein moves towards the plus end of microtubule, so MT polarity could be measured by tracking EB1 movement. For general review on tracking technique in cell biology, see .</p>
+<h1 id="tracking-tools">Tracking Tools</h1>
+<p>ImageJ/Fiji (http://fiji.sc) is an open source image processing analysis software. Please install it in your laptop. We choose several of the following available tracking tools in ImageJ/Fiji for measuring movement.</p>
+<ul>
+<li><p><strong>Manual Tracking (Manual_Tracking.class)</strong>: This is a plugin bundled with Fiji that allows you to accumulate track data while you interactively click dots/particles using mouse. More information and download link could be found at:</p>
+<ul>
+<li><p><a href="http://rsbweb.nih.gov/ij/plugins/track/track.html"><code class="url">http://rsbweb.nih.gov/ij/plugins/track/track.html</code></a></p></li>
+</ul></li>
+</ul>
+<ul>
+<li><p><strong>Particle Tracking (ParticleTracker.jar)</strong> :Automated tracking of particles. Optimized for spherical dots. Developed by the MOSAIC group in the ETH . We use modified version of the particle tracker.</p>
+<ul>
+<li><p><a href="http://cmci.embl.de/downloads/particletracker2d"><code class="url">http://cmci.embl.de/downloads/particletracker2d</code></a></p></li>
+</ul></li>
+</ul>
+<ul>
+<li><p><strong>Flow Analysis (kbi_ij_plugins_882b-101003.jar) </strong>: Optical flow analysis tool. Since documentation is poor, we will only try using it to see how it works. Website is:</p>
+<ul>
+<li><p><a href="http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/KbiFlow"><code class="url">http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/KbiFlow</code></a></p></li>
+<li><p>a short description available in <a href="http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/ImageJKbiPlugins"><code class="url">http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/ImageJKbiPlugins</code></a></p></li>
+<li><p>Download <a href="http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/kbi%5C_ij%5C_plugins%5C_882b-101003.jar"><code class="url">http://hasezawa.ib.k.u-tokyo.ac.jp/zp/Kbi/kbi\_ij\_plugins\_882b-101003.jar</code></a></p></li>
+<li><p>This plugin in is written in Scala and requires Scala runtime library. This could be downloaded from the site linked below.</p>
+<ul>
+<li><p><a href="http://www.scala-lang.org/downloads/index.html"><code class="url">http://www.scala-lang.org/downloads/index.html</code></a></p></li>
+</ul></li>
+</ul></li>
+</ul>
+<ul>
+<li><p><strong>Tailor Made Cost Function</strong>: Combined use of Particle analysis function for segmentation and custom designing of cost function to link detected particle.</p>
+<ul>
+<li><p>This might be a bit advanced, but we could maybe try.</p></li>
+</ul></li>
+</ul>
+<h1 id="object-and-methods">Object and Methods</h1>
+<p>Drosophila embryo image sequence was provided by Sasha Necakov @ Stefano De Renzis lab. Our aim is to plot a histogram of movement orientation, and statistically test whether there is bias in the movement. Among available tools, find the best combination to analyze the microtubule orientation.</p>
+<ul>
+<li><p>Important information about data:</p>
+<ul>
+<li><p>XY scale: 1 pixel = 0.266 <span class="math">μ</span>m</p></li>
+<li><p>Time/Frame:</p></li>
+</ul></li>
+</ul>
+<p>We analyze movement of EB1 signal using three strategies with following steps:</p>
+<ol>
+<li><p>Track signals either manually or automatically. When tracking successful, we have numerical data of moving dots (x,y coordinates over time).</p></li>
+<li><p>Using resulted coordinates, calculate the direction of EB1 movement (hence MT orientation). See the following section for this calculation.</p></li>
+<li><p>Plot the results in histogram in R. Evaluate the bias in orientation using von Mises circular statistics.</p></li>
+</ol>
+<h1 id="circular-statistics">Circular Statistics</h1>
+<p>For treating circular data, a special type of statistics should be used since data wrap at 0 and 2<span class="math">π</span> . Here, we use R modules to treat circular data.</p>
+<ul>
+<li><p>Conversion of Cartesian Coordinates to Polar Coordinates</p>
+<ul>
+<li><p><strong>R Package: fisheyeR</strong></p></li>
+<li><p><a href="http://finzi.psych.upenn.edu/R/library/fisheyeR/html/toCartesian.html"><code class="url">http://finzi.psych.upenn.edu/R/library/fisheyeR/html/toCartesian.html</code></a></p></li>
+<li><p>we use function <strong>toPolar(x, y)</strong></p></li>
+<li><p>for explanation see <a href="http://en.wikipedia.org/wiki/Polar%5C_coordinate%5C_system"><code class="url">http://en.wikipedia.org/wiki/Polar\_coordinate\_system</code></a></p></li>
+</ul></li>
+</ul>
+<ul>
+<li><p>von Mises likelihood estimates</p>
+<ul>
+<li><p><a href="http://en.wikipedia.org/wiki/Von%5C_Mises%5C_distribution"><code class="url">http://en.wikipedia.org/wiki/Von\_Mises\_distribution</code></a></p></li>
+<li><p><strong>R Package: CircStats</strong></p></li>
+<li><p><a href="http://finzi.psych.upenn.edu/R/library/CircStats/html/vm.ml.html"><code class="url">http://finzi.psych.upenn.edu/R/library/CircStats/html/vm.ml.html</code></a></p></li>
+<li><p>we use function <strong>vm.ml(...)</strong>. <span class="math">μ</span> (mean) and <span class="math">κ</span> (concentration parameter) values could be calculated using this function.</p></li>
+<li><p><strong>R Package: circular (more parameters)</strong></p></li>
+<li><p><a href="http://finzi.psych.upenn.edu/R/library/circular/html/mle.vonmises.html"><code class="url">http://finzi.psych.upenn.edu/R/library/circular/html/mle.vonmises.html</code></a></p></li>
+<li><p>We use function <strong>mle.vonmises(...)</strong>. Maximum likelihood estimate of concentration parameter (<span class="math">κ</span>) is a good indicator of bias in directionality.</p></li>
+</ul></li>
+</ul>
+<ul>
+<li><p>Data Plotting</p>
+<ul>
+<li><p><strong>R Package: CircStats</strong></p></li>
+<li><p><a href="http://finzi.psych.upenn.edu/R/library/CircStats/html/00Index.html"><code class="url">http://finzi.psych.upenn.edu/R/library/CircStats/html/00Index.html</code></a></p></li>
+</ul></li>
+</ul>
+<p>{plainnat}</p>
